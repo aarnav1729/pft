@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let totalIncome = 0;
     let highestExpense = 0;
     let averageSpending = 0;
+    let monthlyBudget = 0;
 
     // Initialize amCharts
     am4core.useTheme(am4themes_animated);
@@ -291,27 +292,6 @@ document.addEventListener('DOMContentLoaded', () => {
         pieSeries.colors.list = incomeColors.map(color => am4core.color(color));
 
         incomePieChart.legend = new am4charts.Legend();
-
-        // Responsive settings
-        incomePieChart.responsive.enabled = true;
-        incomePieChart.responsive.rules.push({
-            relevant: function(target) {
-                return am4core.utils.isNumber(target.pixelWidth) ? target.pixelWidth <= 600 : false;
-            },
-            state: function(target, stateId) {
-                if (target instanceof am4charts.Legend) {
-                    let state = target.states.create(stateId);
-                    state.properties.position = "bottom";
-                    state.properties.marginTop = 10;
-                    state.properties.marginLeft = 0;
-                    state.properties.marginRight = 0;
-                    state.properties.paddingLeft = 0;
-                    state.properties.paddingRight = 0;
-                    return state;
-                }
-                return null;
-            }
-        });
     }
 
     function updateExpenditurePieChart() {
@@ -348,27 +328,6 @@ document.addEventListener('DOMContentLoaded', () => {
         pieSeries.colors.list = expenditureColors.map(color => am4core.color(color));
 
         expenditurePieChart.legend = new am4charts.Legend();
-
-        // Responsive settings
-        expenditurePieChart.responsive.enabled = true;
-        expenditurePieChart.responsive.rules.push({
-            relevant: function(target) {
-                return am4core.utils.isNumber(target.pixelWidth) ? target.pixelWidth <= 600 : false;
-            },
-            state: function(target, stateId) {
-                if (target instanceof am4charts.Legend) {
-                    let state = target.states.create(stateId);
-                    state.properties.position = "bottom";
-                    state.properties.marginTop = 10;
-                    state.properties.marginLeft = 0;
-                    state.properties.marginRight = 0;
-                    state.properties.paddingLeft = 0;
-                    state.properties.paddingRight = 0;
-                    return state;
-                }
-                return null;
-            }
-        });
     }
 
     // Update Income vs. Expenditure Line Chart
@@ -443,27 +402,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Add cursor
         incomeExpenditureLineChart.cursor = new am4charts.XYCursor();
-
-        // Responsive settings
-        incomeExpenditureLineChart.responsive.enabled = true;
-        incomeExpenditureLineChart.responsive.rules.push({
-            relevant: function(target) {
-                return am4core.utils.isNumber(target.pixelWidth) ? target.pixelWidth <= 600 : false;
-            },
-            state: function(target, stateId) {
-                if (target instanceof am4charts.Legend) {
-                    let state = target.states.create(stateId);
-                    state.properties.position = "bottom";
-                    state.properties.marginTop = 10;
-                    state.properties.marginLeft = 0;
-                    state.properties.marginRight = 0;
-                    state.properties.paddingLeft = 0;
-                    state.properties.paddingRight = 0;
-                    return state;
-                }
-                return null;
-            }
-        });
     }
 
     // Update Total Income vs. Expenditure Pie Chart
@@ -491,27 +429,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
 
         incomeVsExpenditurePieChart.legend = new am4charts.Legend();
-
-        // Responsive settings
-        incomeVsExpenditurePieChart.responsive.enabled = true;
-        incomeVsExpenditurePieChart.responsive.rules.push({
-            relevant: function(target) {
-                return am4core.utils.isNumber(target.pixelWidth) ? target.pixelWidth <= 600 : false;
-            },
-            state: function(target, stateId) {
-                if (target instanceof am4charts.Legend) {
-                    let state = target.states.create(stateId);
-                    state.properties.position = "bottom";
-                    state.properties.marginTop = 10;
-                    state.properties.marginLeft = 0;
-                    state.properties.marginRight = 0;
-                    state.properties.paddingLeft = 0;
-                    state.properties.paddingRight = 0;
-                    return state;
-                }
-                return null;
-            }
-        });
     }
 
     function updateView() {
