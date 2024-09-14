@@ -16,18 +16,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let incomeCategories = ['Dad', 'Webstax', 'Premier'];
     let expenditureCategories = ['Bar', 'Cash', 'GPay'];
+    // New expenditure categories
+    let expenditureCategoryList = ['Food', 'Fuel', 'Family', 'Recreational', 'Challan', 'Redbull', 'Recharge', 'Toll', 'Uncategorized'];
     let incomeData = {};
     let expenditureData = {};
     let totalExpenditure = 0;
     let totalIncome = 0;
     let highestExpense = 0;
     let averageSpending = 0;
+    let monthlyBudget = 0;
 
     // Initialize amCharts
     am4core.useTheme(am4themes_animated);
 
     // Charts variables
-    let incomePieChart, expenditurePieChart, incomeExpenditureLineChart, incomeVsExpenditurePieChart;
+    let incomePieChart, expenditurePieChart, incomeExpenditureLineChart, incomeVsExpenditurePieChart, expenditureByCategoryPieChart;
 
     // Generate initial dates
     generateDates('2024-09-01', 30);
@@ -46,13 +49,14 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('https://pft-pzif.onrender.com/fetch');
             const finances = await response.json();
+
             finances.forEach(finance => {
-                const date = new Date(finance.date);
-                const formattedDate = date.toISOString().split('T')[0];
+                const dateStr = finance.date;
+                const formattedDate = dateStr;
 
                 let dayCard = document.querySelector(`.day-card[data-date='${formattedDate}']`);
                 if (!dayCard) {
-                    dayCard = addDayEntry(date);
+                    dayCard = addDayEntry(new Date(formattedDate));
                 }
                 populateEntries(dayCard, finance.entries);
             });
@@ -69,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ date, entries })
             });
-            fetchData(); // Re-fetch data to update charts after saving
         } catch (error) {
             console.error('Error saving data:', error);
         }
@@ -111,7 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const expenditureContainer = dayCard.querySelector('.expenditure-container');
 
         incomeEntries.forEach(entry => addEntry(incomeContainer.querySelector('.entry-list'), incomeCategories, entry.amount, capitalizeFirstLetter(entry.method)));
-        expenditureEntries.forEach(entry => addEntry(expenditureContainer.querySelector('.entry-list'), expenditureCategories, entry.amount, capitalizeFirstLetter(entry.method)));
+        expenditureEntries.forEach(entry => {
+            const category = entry.category ? capitalizeFirstLetter(entry.category) : 'Uncategorized';
+            addEntry(expenditureContainer.querySelector('.entry-list'), expenditureCategories, entry.amount, capitalizeFirstLetter(entry.method), category);
+        });
     }
 
     function createEntryContainer(title, options) {
@@ -131,16 +137,19 @@ document.addEventListener('DOMContentLoaded', () => {
         addEntryButton.classList.add('px-4', 'py-2', title === 'Income' ? 'bg-green-600' : 'bg-red-600', 'text-white', 'rounded-md', 'hover:bg-green-700', 'focus:outline-none', 'focus:ring-2', 'focus:ring-green-500');
         addEntryButton.textContent = `Add ${title} Entry`;
         addEntryButton.addEventListener('click', () => {
-            addEntry(entryList, options);
+            if (title === 'Income') {
+                addEntry(entryList, options);
+            } else {
+                addEntry(entryList, options, 0, options[0], 'Uncategorized');
+            }
             updateTotals();
-            saveData(container.closest('.day-card').dataset.date, collectEntriesFromDay(container.closest('.day-card')));
         });
         container.appendChild(addEntryButton);
 
         return container;
     }
 
-    function addEntry(entryList, options, amount = 0, method = options[0]) {
+    function addEntry(entryList, options, amount = 0, method = options[0], category = null) {
         const entryRow = document.createElement('div');
         entryRow.classList.add('flex', 'items-center', 'space-x-4', 'mt-2', 'entry-row');
 
@@ -148,15 +157,18 @@ document.addEventListener('DOMContentLoaded', () => {
         amountInput.type = 'number';
         amountInput.placeholder = 'Amount';
         amountInput.value = amount;
-        amountInput.classList.add('border-gray-300', 'focus:ring-blue-500', 'focus:border-blue-500', 'rounded-md', 'w-1/2', 'amount-input', 'py-2', 'px-3');
+        amountInput.classList.add('border-gray-300', 'focus:ring-blue-500', 'focus:border-blue-500', 'rounded-md', 'w-1/4', 'amount-input', 'py-2', 'px-3');
         amountInput.addEventListener('input', () => {
             updateTotals();
-            saveData(entryList.closest('.day-card').dataset.date, collectEntriesFromDay(entryList.closest('.day-card')));
+            const dayCard = entryList.closest('.day-card');
+            const date = dayCard.dataset.date;
+            const entries = collectEntriesFromDay(dayCard);
+            saveData(date, entries);
         });
         entryRow.appendChild(amountInput);
 
         const methodSelect = document.createElement('select');
-        methodSelect.classList.add('border-gray-300', 'focus:ring-blue-500', 'focus:border-blue-500', 'rounded-md', 'w-1/2', 'method-select', 'py-2', 'px-3');
+        methodSelect.classList.add('border-gray-300', 'focus:ring-blue-500', 'focus:border-blue-500', 'rounded-md', 'w-1/4', 'method-select', 'py-2', 'px-3');
         options.forEach(option => {
             const opt = document.createElement('option');
             opt.value = option.toLowerCase();
@@ -166,9 +178,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         methodSelect.addEventListener('change', () => {
             updateTotals();
-            saveData(entryList.closest('.day-card').dataset.date, collectEntriesFromDay(entryList.closest('.day-card')));
+            const dayCard = entryList.closest('.day-card');
+            const date = dayCard.dataset.date;
+            const entries = collectEntriesFromDay(dayCard);
+            saveData(date, entries);
         });
         entryRow.appendChild(methodSelect);
+
+        if (options === expenditureCategories) {
+            // Category selector for expenditure entries
+            const categorySelect = document.createElement('select');
+            categorySelect.classList.add('border-gray-300', 'focus:ring-blue-500', 'focus:border-blue-500', 'rounded-md', 'w-1/4', 'category-select', 'py-2', 'px-3');
+            expenditureCategoryList.forEach(option => {
+                const opt = document.createElement('option');
+                opt.value = option.toLowerCase();
+                opt.textContent = option;
+                opt.selected = option.toLowerCase() === category.toLowerCase();
+                categorySelect.appendChild(opt);
+            });
+            categorySelect.addEventListener('change', () => {
+                updateTotals();
+                const dayCard = entryList.closest('.day-card');
+                const date = dayCard.dataset.date;
+                const entries = collectEntriesFromDay(dayCard);
+                saveData(date, entries);
+            });
+            entryRow.appendChild(categorySelect);
+        }
 
         const removeButton = document.createElement('button');
         removeButton.classList.add('text-red-500', 'hover:text-red-700', 'ml-2', 'focus:outline-none');
@@ -176,7 +212,10 @@ document.addEventListener('DOMContentLoaded', () => {
         removeButton.addEventListener('click', () => {
             entryRow.remove();
             updateTotals();
-            saveData(entryList.closest('.day-card').dataset.date, collectEntriesFromDay(entryList.closest('.day-card')));
+            const dayCard = entryList.closest('.day-card');
+            const date = dayCard.dataset.date;
+            const entries = collectEntriesFromDay(dayCard);
+            saveData(date, entries);
         });
         entryRow.appendChild(removeButton);
 
@@ -188,7 +227,13 @@ document.addEventListener('DOMContentLoaded', () => {
         dayCard.querySelectorAll('.entry-row').forEach(entryRow => {
             const amount = parseFloat(entryRow.querySelector('.amount-input').value) || 0;
             const method = entryRow.querySelector('.method-select').value;
-            entries.push({ amount, method });
+            const categorySelect = entryRow.querySelector('.category-select');
+            const entry = { amount, method };
+            if (categorySelect) {
+                const category = categorySelect.value;
+                entry.category = category;
+            }
+            entries.push(entry);
         });
         return entries;
     }
@@ -206,6 +251,9 @@ document.addEventListener('DOMContentLoaded', () => {
         incomeCategories.forEach(category => incomeData[category.toLowerCase()] = 0);
         expenditureCategories.forEach(category => expenditureData[category.toLowerCase()] = 0);
 
+        let expenditureByCategoryData = {};
+        expenditureCategoryList.forEach(category => expenditureByCategoryData[category.toLowerCase()] = 0);
+
         daysContainer.querySelectorAll('.day-card:not(.hidden)').forEach(dayCard => {
             let dailyExpenditure = 0;
             let hasEntries = false;
@@ -221,6 +269,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     expenditureData[method] += amount;
                     totalExpenditure += amount;
                     dailyExpenditure += amount;
+
+                    const categorySelect = entryRow.querySelector('.category-select');
+                    let category = categorySelect ? categorySelect.value : 'uncategorized';
+                    expenditureByCategoryData[category] += amount;
                 }
                 hasEntries = true;
             });
@@ -245,6 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update charts
         updateIncomePieChart();
         updateExpenditurePieChart();
+        updateExpenditureByCategoryPieChart(expenditureByCategoryData);
         updateIncomeExpenditureLineChart();
         updateIncomeVsExpenditurePieChart();
     }
@@ -255,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         incomePieChart = am4core.create("incomePieChart", am4charts.PieChart);
-        incomePieChart.hiddenState.properties.opacity = 0;
+        incomePieChart.hiddenState.properties.opacity = 0; // this creates initial fade-in
 
         incomePieChart.data = incomeCategories.map(category => ({
             category: category,
@@ -265,6 +318,22 @@ document.addEventListener('DOMContentLoaded', () => {
         let pieSeries = incomePieChart.series.push(new am4charts.PieSeries());
         pieSeries.dataFields.value = "value";
         pieSeries.dataFields.category = "category";
+
+        // Custom colors with distinct colors for each category
+        const incomeColors = [
+            "#4e73df", // Blue
+            "#1cc88a", // Green
+            "#36b9cc", // Teal
+            "#f6c23e", // Yellow
+            "#e74a3b", // Red
+            "#858796", // Gray
+            "#fd7e14", // Orange
+            "#6f42c1", // Purple
+            "#20c997", // Cyan
+            "#e83e8c"  // Pink
+        ];
+
+        pieSeries.colors.list = incomeColors.map(color => am4core.color(color));
 
         incomePieChart.legend = new am4charts.Legend();
     }
@@ -286,9 +355,61 @@ document.addEventListener('DOMContentLoaded', () => {
         pieSeries.dataFields.value = "value";
         pieSeries.dataFields.category = "category";
 
+        // Custom colors with distinct colors for each category
+        const expenditureColors = [
+            "#e74a3b", // Red
+            "#f6c23e", // Yellow
+            "#1cc88a", // Green
+            "#4e73df", // Blue
+            "#36b9cc", // Teal
+            "#858796", // Gray
+            "#fd7e14", // Orange
+            "#6f42c1", // Purple
+            "#20c997", // Cyan
+            "#e83e8c"  // Pink
+        ];
+
+        pieSeries.colors.list = expenditureColors.map(color => am4core.color(color));
+
         expenditurePieChart.legend = new am4charts.Legend();
     }
 
+    function updateExpenditureByCategoryPieChart(expenditureByCategoryData) {
+        if (expenditureByCategoryPieChart) {
+            expenditureByCategoryPieChart.dispose();
+        }
+
+        expenditureByCategoryPieChart = am4core.create("expenditureByCategoryPieChart", am4charts.PieChart);
+        expenditureByCategoryPieChart.hiddenState.properties.opacity = 0;
+
+        expenditureByCategoryPieChart.data = expenditureCategoryList.map(category => ({
+            category: category,
+            value: expenditureByCategoryData[category.toLowerCase()]
+        }));
+
+        let pieSeries = expenditureByCategoryPieChart.series.push(new am4charts.PieSeries());
+        pieSeries.dataFields.value = "value";
+        pieSeries.dataFields.category = "category";
+
+        // Custom colors
+        const categoryColors = [
+            "#e74a3b", // Food - Red
+            "#f6c23e", // Fuel - Yellow
+            "#1cc88a", // Family - Green
+            "#4e73df", // Recreational - Blue
+            "#36b9cc", // Challan - Teal
+            "#858796", // Redbull - Gray
+            "#fd7e14", // Recharge - Orange
+            "#6f42c1", // Toll - Purple
+            "#6c757d"  // Uncategorized - Dark Gray
+        ];
+
+        pieSeries.colors.list = categoryColors.map(color => am4core.color(color));
+
+        expenditureByCategoryPieChart.legend = new am4charts.Legend();
+    }
+
+    // Update Income vs. Expenditure Line Chart
     function updateIncomeExpenditureLineChart() {
         if (incomeExpenditureLineChart) {
             incomeExpenditureLineChart.dispose();
@@ -329,23 +450,40 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         });
 
+        // Create axes
         let dateAxis = incomeExpenditureLineChart.xAxes.push(new am4charts.DateAxis());
         let valueAxis = incomeExpenditureLineChart.yAxes.push(new am4charts.ValueAxis());
 
+        // Create series for income
         let incomeSeries = incomeExpenditureLineChart.series.push(new am4charts.LineSeries());
         incomeSeries.dataFields.valueY = "income";
         incomeSeries.dataFields.dateX = "date";
         incomeSeries.name = "Income";
+        incomeSeries.stroke = am4core.color("#4caf50");
+        incomeSeries.fill = am4core.color("#4caf50");
+        incomeSeries.strokeWidth = 2;
+        incomeSeries.tooltipText = "{name}: [bold]{valueY}[/]";
+        incomeSeries.tensionX = 0.8;
 
+        // Create series for expenditure
         let expenditureSeries = incomeExpenditureLineChart.series.push(new am4charts.LineSeries());
         expenditureSeries.dataFields.valueY = "expenditure";
         expenditureSeries.dataFields.dateX = "date";
         expenditureSeries.name = "Expenditure";
+        expenditureSeries.stroke = am4core.color("#e53935");
+        expenditureSeries.fill = am4core.color("#e53935");
+        expenditureSeries.strokeWidth = 2;
+        expenditureSeries.tooltipText = "{name}: [bold]{valueY}[/]";
+        expenditureSeries.tensionX = 0.8;
 
+        // Add legend
         incomeExpenditureLineChart.legend = new am4charts.Legend();
+
+        // Add cursor
         incomeExpenditureLineChart.cursor = new am4charts.XYCursor();
     }
 
+    // Update Total Income vs. Expenditure Pie Chart
     function updateIncomeVsExpenditurePieChart() {
         if (incomeVsExpenditurePieChart) {
             incomeVsExpenditurePieChart.dispose();
@@ -362,6 +500,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let pieSeries = incomeVsExpenditurePieChart.series.push(new am4charts.PieSeries());
         pieSeries.dataFields.value = "value";
         pieSeries.dataFields.category = "category";
+
+        // Custom colors
+        pieSeries.colors.list = [
+            am4core.color("#4caf50"),
+            am4core.color("#e53935")
+        ];
 
         incomeVsExpenditurePieChart.legend = new am4charts.Legend();
     }
