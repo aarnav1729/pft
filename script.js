@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function definitions
     async function fetchData() {
         try {
-            const response = await fetch('http://localhost:3000/fetch');
+            const response = await fetch('https://pft-pzif.onrender.com/fetch');
             const finances = await response.json();
             finances.forEach(finance => {
                 const date = new Date(finance.date);
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function saveData(date, entries) {
         try {
-            await fetch('http://localhost:3000/save', {
+            await fetch('https://pft-pzif.onrender.com/save', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ date, entries })
