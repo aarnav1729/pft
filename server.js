@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
+// Use express.json() middleware instead of body-parser
 app.use(express.json());
 app.use(cors());
 
@@ -24,16 +25,11 @@ const Finance = mongoose.model('Finance', financeSchema);
 app.post('/save', async (req, res) => {
     const { date, entries } = req.body;
     try {
-        const existingData = await Finance.findOne({ date });
-
-        if (existingData) {
-            existingData.entries.push(...entries);
-            await existingData.save();
-        } else {
-            const newFinance = new Finance({ date, entries });
-            await newFinance.save();
-        }
-
+        await Finance.findOneAndUpdate(
+            { date },
+            { date, entries },
+            { upsert: true, new: true }
+        );
         res.send('Data saved successfully');
     } catch (error) {
         console.error('Error saving data:', error);
@@ -52,6 +48,7 @@ app.get('/fetch', async (req, res) => {
 });
 
 // Start the server
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
