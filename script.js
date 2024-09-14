@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let incomeCategories = ['Dad', 'Webstax', 'Premier'];
     let expenditureCategories = ['Bar', 'Cash', 'GPay'];
-    // New expenditure categories
     let expenditureCategoryList = ['Food', 'Fuel', 'Family', 'Recreational', 'Challan', 'Redbull', 'Recharge', 'Toll', 'Uncategorized'];
     let incomeData = {};
     let expenditureData = {};
@@ -24,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let totalIncome = 0;
     let highestExpense = 0;
     let averageSpending = 0;
-    let monthlyBudget = 0;
 
     // Initialize amCharts
     am4core.useTheme(am4themes_animated);
@@ -176,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
             opt.selected = option === method;
             methodSelect.appendChild(opt);
         });
-        
+
         methodSelect.addEventListener('change', () => {
             updateTotals();
             const dayCard = entryList.closest('.day-card');
@@ -249,8 +247,8 @@ document.addEventListener('DOMContentLoaded', () => {
         incomeData = {};
         expenditureData = {};
 
-        incomeCategories.forEach(category => incomeData[category.toLowerCase()] = 0);
-        expenditureCategories.forEach(category => expenditureData[category.toLowerCase()] = 0);
+        incomeCategories.forEach(category => incomeData[category] = 0); // Fix: use original keys
+        expenditureCategories.forEach(category => expenditureData[category] = 0); // Fix: use original keys
 
         let expenditureByCategoryData = {};
         expenditureCategoryList.forEach(category => expenditureByCategoryData[category.toLowerCase()] = 0);
@@ -313,28 +311,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         incomePieChart.data = incomeCategories.map(category => ({
             category: category,
-            value: incomeData[category.toLowerCase()]
+            value: incomeData[category] // Fix: use original keys
         }));
 
         let pieSeries = incomePieChart.series.push(new am4charts.PieSeries());
         pieSeries.dataFields.value = "value";
         pieSeries.dataFields.category = "category";
 
-        // Custom colors with distinct colors for each category
-        const incomeColors = [
-            "#4e73df", // Blue
-            "#1cc88a", // Green
-            "#36b9cc", // Teal
-            "#f6c23e", // Yellow
-            "#e74a3b", // Red
-            "#858796", // Gray
-            "#fd7e14", // Orange
-            "#6f42c1", // Purple
-            "#20c997", // Cyan
-            "#e83e8c"  // Pink
-        ];
-
-        pieSeries.colors.list = incomeColors.map(color => am4core.color(color));
+        pieSeries.colors.step = 2; // Colors setting
 
         incomePieChart.legend = new am4charts.Legend();
     }
@@ -349,28 +333,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         expenditurePieChart.data = expenditureCategories.map(category => ({
             category: category,
-            value: expenditureData[category.toLowerCase()]
+            value: expenditureData[category] // Fix: use original keys
         }));
 
         let pieSeries = expenditurePieChart.series.push(new am4charts.PieSeries());
         pieSeries.dataFields.value = "value";
         pieSeries.dataFields.category = "category";
 
-        // Custom colors with distinct colors for each category
-        const expenditureColors = [
-            "#e74a3b", // Red
-            "#f6c23e", // Yellow
-            "#1cc88a", // Green
-            "#4e73df", // Blue
-            "#36b9cc", // Teal
-            "#858796", // Gray
-            "#fd7e14", // Orange
-            "#6f42c1", // Purple
-            "#20c997", // Cyan
-            "#e83e8c"  // Pink
-        ];
-
-        pieSeries.colors.list = expenditureColors.map(color => am4core.color(color));
+        pieSeries.colors.step = 2; // Colors setting
 
         expenditurePieChart.legend = new am4charts.Legend();
     }
@@ -392,20 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pieSeries.dataFields.value = "value";
         pieSeries.dataFields.category = "category";
 
-        // Custom colors
-        const categoryColors = [
-            "#e74a3b", // Food - Red
-            "#f6c23e", // Fuel - Yellow
-            "#1cc88a", // Family - Green
-            "#4e73df", // Recreational - Blue
-            "#36b9cc", // Challan - Teal
-            "#858796", // Redbull - Gray
-            "#fd7e14", // Recharge - Orange
-            "#6f42c1", // Toll - Purple
-            "#6c757d"  // Uncategorized - Dark Gray
-        ];
-
-        pieSeries.colors.list = categoryColors.map(color => am4core.color(color));
+        pieSeries.colors.step = 2; // Colors setting
 
         expenditureByCategoryPieChart.legend = new am4charts.Legend();
     }
@@ -431,9 +388,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const amount = parseFloat(entryRow.querySelector('.amount-input').value) || 0;
                 const method = entryRow.querySelector('.method-select').value;
 
-                if (incomeCategories.map(c => c.toLowerCase()).includes(method)) {
+                if (incomeCategories.includes(method)) {
                     dailyIncome += amount;
-                } else if (expenditureCategories.map(c => c.toLowerCase()).includes(method)) {
+                } else if (expenditureCategories.includes(method)) {
                     dailyExpenditure += amount;
                 }
             });
@@ -451,11 +408,9 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         });
 
-        // Create axes
         let dateAxis = incomeExpenditureLineChart.xAxes.push(new am4charts.DateAxis());
         let valueAxis = incomeExpenditureLineChart.yAxes.push(new am4charts.ValueAxis());
 
-        // Create series for income
         let incomeSeries = incomeExpenditureLineChart.series.push(new am4charts.LineSeries());
         incomeSeries.dataFields.valueY = "income";
         incomeSeries.dataFields.dateX = "date";
@@ -466,7 +421,6 @@ document.addEventListener('DOMContentLoaded', () => {
         incomeSeries.tooltipText = "{name}: [bold]{valueY}[/]";
         incomeSeries.tensionX = 0.8;
 
-        // Create series for expenditure
         let expenditureSeries = incomeExpenditureLineChart.series.push(new am4charts.LineSeries());
         expenditureSeries.dataFields.valueY = "expenditure";
         expenditureSeries.dataFields.dateX = "date";
@@ -477,14 +431,10 @@ document.addEventListener('DOMContentLoaded', () => {
         expenditureSeries.tooltipText = "{name}: [bold]{valueY}[/]";
         expenditureSeries.tensionX = 0.8;
 
-        // Add legend
         incomeExpenditureLineChart.legend = new am4charts.Legend();
-
-        // Add cursor
         incomeExpenditureLineChart.cursor = new am4charts.XYCursor();
     }
 
-    // Update Total Income vs. Expenditure Pie Chart
     function updateIncomeVsExpenditurePieChart() {
         if (incomeVsExpenditurePieChart) {
             incomeVsExpenditurePieChart.dispose();
@@ -502,7 +452,6 @@ document.addEventListener('DOMContentLoaded', () => {
         pieSeries.dataFields.value = "value";
         pieSeries.dataFields.category = "category";
 
-        // Custom colors
         pieSeries.colors.list = [
             am4core.color("#4caf50"),
             am4core.color("#e53935")
