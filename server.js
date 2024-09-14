@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(cors());
 
 // Connect to MongoDB
-mongoose.connect('your_mongodb_connection_string_here', {
+mongoose.connect('mongodb+srv://aarnavsingh836:Cucumber1729@rr.oldse8x.mongodb.net/?retryWrites=true&w=majority&appName=rr', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
