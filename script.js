@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function populateEntries(dayCard, entries) {
         const incomeEntries = entries.filter(e => incomeCategories.includes(capitalizeFirstLetter(e.method)));
-        const expenditureEntries = entries.filter(e => expenditureCategories.includes(capitalizeFirstLetter(e.method)));
+        const expenditureEntries = entries.filter(e => expenditureCategories.includes(e.method));
 
         const incomeContainer = dayCard.querySelector('.income-container');
         const expenditureContainer = dayCard.querySelector('.expenditure-container');
@@ -171,11 +171,12 @@ document.addEventListener('DOMContentLoaded', () => {
         methodSelect.classList.add('border-gray-300', 'focus:ring-blue-500', 'focus:border-blue-500', 'rounded-md', 'w-1/4', 'method-select', 'py-2', 'px-3');
         options.forEach(option => {
             const opt = document.createElement('option');
-            opt.value = option.toLowerCase();
+            opt.value = option; // Preserve original case
             opt.textContent = option;
             opt.selected = option === method;
             methodSelect.appendChild(opt);
         });
+        
         methodSelect.addEventListener('change', () => {
             updateTotals();
             const dayCard = entryList.closest('.day-card');
@@ -261,11 +262,11 @@ document.addEventListener('DOMContentLoaded', () => {
             dayCard.querySelectorAll('.entry-row').forEach(entryRow => {
                 const amount = parseFloat(entryRow.querySelector('.amount-input').value) || 0;
                 const method = entryRow.querySelector('.method-select').value;
-
-                if (incomeCategories.map(c => c.toLowerCase()).includes(method)) {
+                
+                if (incomeCategories.includes(method)) {
                     incomeData[method] += amount;
                     totalIncome += amount;
-                } else if (expenditureCategories.map(c => c.toLowerCase()).includes(method)) {
+                } else if (expenditureCategories.includes(method)) {
                     expenditureData[method] += amount;
                     totalExpenditure += amount;
                     dailyExpenditure += amount;
