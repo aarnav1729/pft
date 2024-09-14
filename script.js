@@ -1,4 +1,4 @@
-sdocument.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     // Variable declarations
     const daysContainer = document.getElementById('days-container');
     const totalExpenditureEl = document.getElementById('total-expenditure');
