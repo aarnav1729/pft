@@ -16,7 +16,11 @@ mongoose.connect('mongodb+srv://aarnavsingh836:Cucumber1729@rr.oldse8x.mongodb.n
 // Define schema and model
 const financeSchema = new mongoose.Schema({
     date: String,
-    entries: Array
+    entries: [{
+        amount: Number,
+        method: String,
+        category: String
+    }]
 });
 
 const Finance = mongoose.model('Finance', financeSchema);
