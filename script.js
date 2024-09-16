@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const dateStr = finance.date;
                 const formattedDate = dateStr;
 
-                let dayCard = document.querySelector('.day-card[data-date=${formattedDate}]');
+                let dayCard = document.querySelector(.day-card[data-date='${formattedDate}']);
                 if (!dayCard) {
                     dayCard = addDayEntry(new Date(formattedDate));
                 }
@@ -136,17 +136,15 @@ document.addEventListener('DOMContentLoaded', () => {
         investmentEntries.forEach(entry => {
             addEntry(investmentContainer.querySelector('.entry-list'), investmentCategories, entry.amount, entry.method, null, 'investment');
         });
-
-        updateExpenditureByCategoryTable(expenditureByCategoryData);
     }
 
     function createEntryContainer(title, options) {
         const container = document.createElement('div');
-        container.classList.add('mb-4', '${title.toLowerCase()}-container');
+        container.classList.add('mb-4', ${title.toLowerCase()}-container);
 
         const titleLabel = document.createElement('h5');
         titleLabel.classList.add('text-md', 'font-semibold', 'mb-2');
-        titleLabel.textContent = '${title} Entries';
+        titleLabel.textContent = ${title} Entries;
         container.appendChild(titleLabel);
 
         const entryList = document.createElement('div');
@@ -159,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (title === 'Expenditure') bgColorClass = 'bg-red-600';
 
         addEntryButton.classList.add('px-4', 'py-2', bgColorClass, 'text-white', 'rounded-md', 'hover:bg-blue-700', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500');
-        addEntryButton.textContent = 'Add ${title} Entry';
+        addEntryButton.textContent = Add ${title} Entry;
         addEntryButton.addEventListener('click', () => {
             if (title === 'Income') {
                 addEntry(entryList, options, 0, options[0], null, 'income');
@@ -296,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const percentageCell = document.createElement('td');
             percentageCell.classList.add('border', 'px-4', 'py-2');
-            percentageCell.textContent = '${percentage}%';
+            percentageCell.textContent = ${percentage}%;
             row.appendChild(percentageCell);
 
             tableBody.appendChild(row);
