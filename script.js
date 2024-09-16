@@ -372,6 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateExpenditureByCategoryPieChart(expenditureByCategoryData);
         updateIncomeExpenditureLineChart();
         updateIncomeVsExpenditurePieChart();
+        updateExpenditureByCategoryTable(expenditureByCategoryData);
     }
 
     function updateIncomePieChart() {
