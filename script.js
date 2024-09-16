@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function definitions
     async function fetchData() {
         try {
-            const response = await fetch('https://pft-pzif.onrender.com/fetch');
+            const response = await fetch('/fetch');
             const finances = await response.json();
 
             finances.forEach(finance => {
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function saveData(date, entries) {
         try {
-            await fetch('https://pft-pzif.onrender.com/save', {
+            await fetch('/save', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ date, entries })
@@ -114,21 +114,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function populateEntries(dayCard, entries) {
-        const incomeEntries = entries.filter(e => e.type === 'income');
-        const expenditureEntries = entries.filter(e => e.type === 'expenditure');
-        const investmentEntries = entries.filter(e => e.type === 'investment');
+        const incomeEntries = entries.filter(e => {
+            return e.type === 'income' || (!e.type && incomeCategories.includes(e.method));
+        });
+        const expenditureEntries = entries.filter(e => {
+            return e.type === 'expenditure' || (!e.type && expenditureCategories.includes(e.method));
+        });
+        const investmentEntries = entries.filter(e => {
+            return e.type === 'investment' || (!e.type && investmentCategories.includes(e.method));
+        });
 
         const incomeContainer = dayCard.querySelector('.income-container');
         const expenditureContainer = dayCard.querySelector('.expenditure-container');
         const investmentContainer = dayCard.querySelector('.investment-container');
 
-        incomeEntries.forEach(entry => addEntry(incomeContainer.querySelector('.entry-list'), incomeCategories, entry.amount, entry.method));
+        incomeEntries.forEach(entry => addEntry(incomeContainer.querySelector('.entry-list'), incomeCategories, entry.amount, entry.method, null, 'income'));
         expenditureEntries.forEach(entry => {
             const category = entry.category ? entry.category : 'Uncategorized';
-            addEntry(expenditureContainer.querySelector('.entry-list'), expenditureCategories, entry.amount, entry.method, category);
+            addEntry(expenditureContainer.querySelector('.entry-list'), expenditureCategories, entry.amount, entry.method, category, 'expenditure');
         });
         investmentEntries.forEach(entry => {
-            addEntry(investmentContainer.querySelector('.entry-list'), investmentCategories, entry.amount, entry.method);
+            addEntry(investmentContainer.querySelector('.entry-list'), investmentCategories, entry.amount, entry.method, null, 'investment');
         });
     }
 
@@ -171,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const entryRow = document.createElement('div');
         entryRow.classList.add('flex', 'items-center', 'space-x-4', 'mt-2', 'entry-row');
         if (type) entryRow.dataset.type = type;
+        else entryRow.dataset.type = 'expenditure'; // Default to 'expenditure' if type is null
 
         const amountInput = document.createElement('input');
         amountInput.type = 'number';
@@ -246,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dayCard.querySelectorAll('.entry-row').forEach(entryRow => {
             const amount = parseFloat(entryRow.querySelector('.amount-input').value) || 0;
             const method = entryRow.querySelector('.method-select').value;
-            const type = entryRow.dataset.type;
+            const type = entryRow.dataset.type || 'expenditure';
             const entry = { amount, method, type };
             if (type === 'expenditure') {
                 const categorySelect = entryRow.querySelector('.category-select');
@@ -284,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
             dayCard.querySelectorAll('.entry-row').forEach(entryRow => {
                 const amount = parseFloat(entryRow.querySelector('.amount-input').value) || 0;
                 const method = entryRow.querySelector('.method-select').value;
-                const type = entryRow.dataset.type;
+                const type = entryRow.dataset.type || 'expenditure';
 
                 if (type === 'income') {
                     incomeData[method] += amount;

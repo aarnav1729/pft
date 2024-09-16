@@ -7,6 +7,11 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// Define your categories
+const incomeCategories = ['Dad', 'Webstax', 'Premier'];
+const expenditureCategories = ['Bar', 'Cash', 'GPay'];
+const investmentCategories = ['Stocks', 'Bonds', 'Real Estate', 'Crypto', 'Others'];
+
 // Connect to MongoDB
 mongoose.connect('mongodb+srv://aarnavsingh836:Cucumber1729@rr.oldse8x.mongodb.net/?retryWrites=true&w=majority&appName=rr', {
     useNewUrlParser: true,
@@ -17,8 +22,22 @@ mongoose.connect('mongodb+srv://aarnavsingh836:Cucumber1729@rr.oldse8x.mongodb.n
 const entrySchema = new mongoose.Schema({
     amount: Number,
     method: String,
-    type: { type: String, enum: ['income', 'expenditure', 'investment'], default: expenditure },
-    category: { type: String, default: 'Uncategorized' } 
+    type: {
+        type: String,
+        enum: ['income', 'expenditure', 'investment'],
+        default: function() {
+            if (this.method && incomeCategories.includes(this.method)) {
+                return 'income';
+            } else if (this.method && expenditureCategories.includes(this.method)) {
+                return 'expenditure';
+            } else if (this.method && investmentCategories.includes(this.method)) {
+                return 'investment';
+            } else {
+                return 'expenditure'; // Default to expenditure
+            }
+        }
+    },
+    category: { type: String, default: 'Uncategorized' }
 });
 
 const financeSchema = new mongoose.Schema({
