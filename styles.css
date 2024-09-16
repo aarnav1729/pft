@@ -5,3 +5,11 @@
 html {
     background: linear-gradient(180, #ff8b8b, #b1c1ff ) !important;
 }
+
+head {
+    background: linear-gradient(180, #ff8b8b, #b1c1ff ) !important;
+}
+
+body {
+    background: linear-gradient(180, #ff8b8b, #b1c1ff ) !important;
+}
