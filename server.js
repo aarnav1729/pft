@@ -17,7 +17,7 @@ mongoose.connect('mongodb+srv://aarnavsingh836:Cucumber1729@rr.oldse8x.mongodb.n
 const entrySchema = new mongoose.Schema({
     amount: Number,
     method: String,
-    type: { type: String, enum: ['income', 'expenditure', 'investment'], required: true },
+    type: { type: String, enum: ['income', 'expenditure', 'investment'], default: expenditure },
     category: { type: String, default: 'Uncategorized' } 
 });
 
