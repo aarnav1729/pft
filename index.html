@@ -16,7 +16,7 @@
     <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
     <!-- Include script.js -->
     <script defer src="script.js"></script>
-    <link rel="stylesheet" src="styles.css">
+    <link rel="stylesheet" href="styles.css">
 
     <style>
         /* Additional styles for the footer animation */
@@ -29,6 +29,15 @@
         .fade-in.show {
             opacity: 1;
             transform: translateY(0);
+        }
+
+        /* Fullscreen footer styling */
+        .fullscreen-footer {
+            height: 100vh; /* Make footer take up the entire viewport height */
+        }
+
+        .footer-hidden {
+            display: none; /* Hide footer initially */
         }
     </style>
 </head>
@@ -174,8 +183,8 @@
 
     <!-- Footer -->
     <footer
-        class="fade-in bg-white border-t border-black p-12 mt-16 mx-auto max-w-6xl rounded-lg shadow-lg text-center">
-        <img src="cats.png" alt="CAT Logo" class="mx-auto w-64 h-64">
+        class="fade-in footer-hidden fullscreen-footer bg-transparent p-12 mt-16 mx-auto flex items-center justify-center">
+        <img src="cats.png" alt="CAT Logo" class="w-64 h-64">
     </footer>
 
     <script>
@@ -186,6 +195,7 @@
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
+                        footer.classList.remove('footer-hidden');
                         footer.classList.add('show');
                         observer.unobserve(entry.target); // Stop observing after the animation is triggered
                     }
