@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
         amountInput.type = 'number';
         amountInput.placeholder = 'Amount';
         amountInput.value = amount;
-        amountInput.classList.add('border-gray-300', 'focus:ring-blue-500', 'focus:border-blue-500', 'rounded-md', 'w-1/4', 'amount-input', 'py-2', 'px-3');
+        amountInput.classList.add('border-black', 'focus:ring-blue-500', 'focus:border-blue-500', 'rounded-md', 'w-1/4', 'amount-input', 'py-2', 'px-3');
         amountInput.addEventListener('input', () => {
             updateTotals();
             const dayCard = entryList.closest('.day-card');
@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
         entryRow.appendChild(amountInput);
 
         const methodSelect = document.createElement('select');
-        methodSelect.classList.add('border-gray-300', 'focus:ring-blue-500', 'focus:border-blue-500', 'rounded-md', 'w-1/4', 'method-select', 'py-2', 'px-3');
+        methodSelect.classList.add('border-black', 'focus:ring-blue-500', 'focus:border-blue-500', 'rounded-md', 'w-1/4', 'method-select', 'py-2', 'px-3');
         options.forEach(option => {
             const opt = document.createElement('option');
             opt.value = option; // Preserve original case
@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (type === 'expenditure') {
             // Category selector for expenditure entries
             const categorySelect = document.createElement('select');
-            categorySelect.classList.add('border-gray-300', 'focus:ring-blue-500', 'focus:border-blue-500', 'rounded-md', 'w-1/4', 'category-select', 'py-2', 'px-3');
+            categorySelect.classList.add('border-black', 'focus:ring-blue-500', 'focus:border-blue-500', 'rounded-md', 'w-1/4', 'category-select', 'py-2', 'px-3');
             expenditureCategoryList.forEach(option => {
                 const opt = document.createElement('option');
                 opt.value = option;
@@ -285,17 +285,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const row = document.createElement('tr');
 
             const categoryCell = document.createElement('td');
-            categoryCell.classList.add('border', 'px-4', 'py-2');
+            categoryCell.classList.add('border', 'border-black', 'px-4', 'py-2');
             categoryCell.textContent = capitalizeFirstLetter(category);
             row.appendChild(categoryCell);
 
             const valueCell = document.createElement('td');
-            valueCell.classList.add('border', 'px-4', 'py-2');
+            valueCell.classList.add('border', 'border-black', 'px-4', 'py-2');
             valueCell.textContent = value.toFixed(2);
             row.appendChild(valueCell);
 
             const percentageCell = document.createElement('td');
-            percentageCell.classList.add('border', 'px-4', 'py-2');
+            percentageCell.classList.add('border', 'border-black', 'px-4', 'py-2');
             percentageCell.textContent = `${percentage}%`;
             row.appendChild(percentageCell);
 
