@@ -265,6 +265,42 @@ document.addEventListener('DOMContentLoaded', () => {
         return entries;
     }
 
+    function updateExpenditureByCategoryTable(expenditureByCategoryData) {
+        const tableBody = document.querySelector("#expenditureByCategoryTable tbody");
+        tableBody.innerHTML = ''; // Clear existing rows
+
+        // Convert expenditure data to an array and sort by value in descending order
+        const sortedData = Object.entries(expenditureByCategoryData)
+            .map(([category, value]) => ({ category, value }))
+            .sort((a, b) => b.value - a.value);
+
+        // Calculate total expenditure for percentage calculation
+        const totalExpenditureByCategory = sortedData.reduce((sum, item) => sum + item.value, 0);
+
+        // Create and append rows to the table
+        sortedData.forEach(({ category, value }) => {
+            const percentage = ((value / totalExpenditureByCategory) * 100).toFixed(2);
+            const row = document.createElement('tr');
+
+            const categoryCell = document.createElement('td');
+            categoryCell.classList.add('border', 'px-4', 'py-2');
+            categoryCell.textContent = capitalizeFirstLetter(category);
+            row.appendChild(categoryCell);
+
+            const valueCell = document.createElement('td');
+            valueCell.classList.add('border', 'px-4', 'py-2');
+            valueCell.textContent = value.toFixed(2);
+            row.appendChild(valueCell);
+
+            const percentageCell = document.createElement('td');
+            percentageCell.classList.add('border', 'px-4', 'py-2');
+            percentageCell.textContent = `${percentage}%`;
+            row.appendChild(percentageCell);
+
+            tableBody.appendChild(row);
+        });
+    }
+
     function updateTotals() {
         totalExpenditure = 0;
         totalIncome = 0;

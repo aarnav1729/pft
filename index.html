@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <!-- Head section with updated Tailwind CSS version -->
     <meta charset="UTF-8">
@@ -16,6 +17,7 @@
     <!-- Include script.js -->
     <script defer src="script.js"></script>
 </head>
+
 <body class="bg-white text-gray-900 antialiased">
 
     <!-- Navigation Bar -->
@@ -25,7 +27,7 @@
                 <div class="flex-shrink-0">
                     <a href="#">
                         <!-- Logo Image -->
-                        <img src="cats.png" alt="CAT Logo" class="h-48 w-48">
+                        <img src="cats.png" alt="CAT Logo" class="h-48 w-48 top-0 left-0 ml-0 p-2">
                     </a>
                 </div>
                 <!-- Additional nav items can be added here -->
@@ -40,22 +42,30 @@
             <!-- Dashboard Card -->
             <div class="bg-white border rounded-lg shadow p-6 mb-8">
                 <div class="bg-white border rounded-lg shadow p-6 mb-4">
-                    <h1 class="text-center text-black">Welcome to CAT, your Custom Accounting Tool! CAT is built to allow users to make data-driven decisions about their finances. It is offered completely free of charge, and all your financial data is 100% secure!</h1>
+                    <h1 class="text-center text-black">Welcome to CAT, your Custom Accounting Tool! CAT is built to
+                        allow users to make data-driven decisions about their finances. It is offered completely free of
+                        charge, and all your financial data is 100% secure!</h1>
                 </div>
                 <h2 class="text-3xl font-bold mb-6">Dashboard</h2>
                 <div class="flex flex-col md:flex-row justify-between items-center mb-8">
                     <div class="mb-4 md:mb-0">
-                        <p class="text-lg">Total Expenditure: <span id="total-expenditure" class="text-red-600 font-bold text-xl">0</span></p>
-                        <p class="text-lg">Total Income: <span id="total-income" class="text-green-600 font-bold text-xl">0</span></p>
-                        <p class="text-lg">Total Investments: <span id="total-investments" class="text-blue-600 font-bold text-xl">0</span></p>
+                        <p class="text-lg">Total Expenditure: <span id="total-expenditure"
+                                class="text-red-600 font-bold text-xl">0</span></p>
+                        <p class="text-lg">Total Income: <span id="total-income"
+                                class="text-green-600 font-bold text-xl">0</span></p>
+                        <p class="text-lg">Total Investments: <span id="total-investments"
+                                class="text-blue-600 font-bold text-xl">0</span></p>
                         <p class="text-lg">Net Balance: <span id="net-balance" class="font-bold text-xl">0</span></p>
                         <!-- New summary statistics -->
-                        <p class="text-lg mt-2">Average Daily Spending: <span id="average-spending" class="font-bold text-xl">0</span></p>
-                        <p class="text-lg">Highest Expense: <span id="highest-expense" class="font-bold text-xl">0</span></p>
+                        <p class="text-lg mt-2">Average Daily Spending: <span id="average-spending"
+                                class="font-bold text-xl">0</span></p>
+                        <p class="text-lg">Highest Expense: <span id="highest-expense"
+                                class="font-bold text-xl">0</span></p>
                     </div>
                     <div class="flex items-center">
                         <label for="timeframe" class="mr-3 text-lg">View by:</label>
-                        <select id="timeframe" class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md">
+                        <select id="timeframe"
+                            class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md">
                             <option value="day">Day</option>
                             <option value="month">Month</option>
                             <option value="year">Year</option>
@@ -66,15 +76,19 @@
                 <div class="flex flex-col md:flex-row justify-between items-center mb-8" id="date-range-inputs">
                     <div id="day-input" class="hidden mb-4 md:mb-0">
                         <label for="day-select" class="mr-3 text-lg">Select Day:</label>
-                        <input type="date" id="day-select" class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md">
+                        <input type="date" id="day-select"
+                            class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md">
                     </div>
                     <div id="month-input" class="hidden mb-4 md:mb-0">
                         <label for="month-select" class="mr-3 text-lg">Select Month:</label>
-                        <input type="month" id="month-select" class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md">
+                        <input type="month" id="month-select"
+                            class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md">
                     </div>
                     <div id="year-input" class="hidden mb-4 md:mb-0">
                         <label for="year-select" class="mr-3 text-lg">Select Year:</label>
-                        <input type="number" id="year-select" min="2000" max="2100" step="1" class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md" placeholder="2024">
+                        <input type="number" id="year-select" min="2000" max="2100" step="1"
+                            class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md"
+                            placeholder="2024">
                     </div>
                 </div>
                 <!-- Charts -->
@@ -99,6 +113,26 @@
                         <h3 class="text-lg font-semibold mb-4">Expenditure by Category</h3>
                         <div id="expenditureByCategoryPieChart" style="width: 100%; height: 300px;"></div>
                     </div>
+                    <!-- Expenditure Breakdown by Category Table -->
+                    <div class="bg-white border rounded-lg shadow p-6 md:col-span-2">
+                        <h3 class="text-lg font-semibold mb-4">expenditure by category details</h3>
+                        <!-- Responsive table container -->
+                        <div class="overflow-x-auto">
+                            <table id="expenditureByCategoryTable"
+                                class="min-w-full bg-white border-collapse border border-gray-200">
+                                <thead>
+                                    <tr>
+                                        <th class="border px-4 py-2 text-left">category</th>
+                                        <th class="border px-4 py-2 text-left">amount</th>
+                                        <th class="border px-4 py-2 text-left">percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Data will be dynamically populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                     <!-- Income vs. Expenditure Line Chart -->
                     <div class="bg-white border rounded-lg shadow p-6 md:col-span-2">
                         <h3 class="text-lg font-semibold mb-4">Income vs. Expenditure</h3>
@@ -122,4 +156,5 @@
         </div>
     </div>
 </body>
+
 </html>
