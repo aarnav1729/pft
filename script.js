@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
         amountInput.type = 'number';
         amountInput.placeholder = 'Amount';
         amountInput.value = amount;
-        amountInput.classList.add('border-black', 'focus:ring-blue-500', 'focus:border-blue-500', 'rounded-md', 'w-1/4', 'amount-input', 'py-2', 'px-3');
+        amountInput.classList.add('border-black', 'bg-gray-700', 'text-white', 'focus:ring-blue-500', 'focus:border-blue-500', 'rounded-md', 'w-1/4', 'amount-input', 'py-2', 'px-3');
         amountInput.addEventListener('input', () => {
             updateTotals();
             const dayCard = entryList.closest('.day-card');
