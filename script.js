@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function addDayEntry(date) {
         const dayCard = document.createElement('div');
-        dayCard.classList.add('bg-white', 'border', 'rounded-lg', 'shadow', 'p-6', 'space-y-4', 'day-card');
+        dayCard.classList.add('bg-transparent', 'border', 'border-black', 'rounded-lg', 'shadow', 'p-6', 'space-y-4', 'day-card');
         dayCard.dataset.date = date.toISOString().split('T')[0];
 
         const dateLabel = document.createElement('h4');
