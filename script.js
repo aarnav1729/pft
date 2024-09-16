@@ -267,19 +267,34 @@ document.addEventListener('DOMContentLoaded', () => {
         return entries;
     }
 
+    function getExpenditureByCategoryData() {
+        let expenditureByCategoryData = {};
+        expenditureCategoryList.forEach(category => expenditureByCategoryData[category] = 0);
+
+        daysContainer.querySelectorAll('.day-card:not(.hidden)').forEach(dayCard => {
+            dayCard.querySelectorAll('.entry-row').forEach(entryRow => {
+                const type = entryRow.dataset.type;
+                if (type === 'expenditure') {
+                    const amount = parseFloat(entryRow.querySelector('.amount-input').value) || 0;
+                    const category = entryRow.querySelector('.category-select') ? entryRow.querySelector('.category-select').value : 'Uncategorized';
+                    expenditureByCategoryData[category] += amount;
+                }
+            });
+        });
+
+        return expenditureByCategoryData;
+    }
+
     function updateExpenditureByCategoryTable(expenditureByCategoryData) {
         const tableBody = document.querySelector("#expenditureByCategoryTable tbody");
         tableBody.innerHTML = ''; // Clear existing rows
 
-        // Convert expenditure data to an array and sort by value in descending order
         const sortedData = Object.entries(expenditureByCategoryData)
             .map(([category, value]) => ({ category, value }))
             .sort((a, b) => b.value - a.value);
 
-        // Calculate total expenditure for percentage calculation
         const totalExpenditureByCategory = sortedData.reduce((sum, item) => sum + item.value, 0);
 
-        // Create and append rows to the table
         sortedData.forEach(({ category, value }) => {
             const percentage = ((value / totalExpenditureByCategory) * 100).toFixed(2);
             const row = document.createElement('tr');
