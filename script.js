@@ -3,7 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const daysContainer = document.getElementById('days-container');
     const totalExpenditureEl = document.getElementById('total-expenditure');
     const totalIncomeEl = document.getElementById('total-income');
-    const differenceEl = document.getElementById('difference');
+    const totalInvestmentsEl = document.getElementById('total-investments');
+    const netBalanceEl = document.getElementById('net-balance');
     const averageSpendingEl = document.getElementById('average-spending');
     const highestExpenseEl = document.getElementById('highest-expense');
     const timeframeSelect = document.getElementById('timeframe');
@@ -16,19 +17,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let incomeCategories = ['Dad', 'Webstax', 'Premier'];
     let expenditureCategories = ['Bar', 'Cash', 'GPay'];
+    // New investment categories
+    let investmentCategories = ['Stocks', 'Bonds', 'Real Estate', 'Crypto', 'Others'];
+    // New expenditure categories
     let expenditureCategoryList = ['Food', 'Fuel', 'Family', 'Recreational', 'Challan', 'Redbull', 'Recharge', 'Toll', 'Uncategorized'];
     let incomeData = {};
     let expenditureData = {};
+    let investmentData = {};
     let totalExpenditure = 0;
     let totalIncome = 0;
+    let totalInvestments = 0;
     let highestExpense = 0;
     let averageSpending = 0;
+    let monthlyBudget = 0;
 
     // Initialize amCharts
     am4core.useTheme(am4themes_animated);
 
     // Charts variables
-    let incomePieChart, expenditurePieChart, incomeExpenditureLineChart, incomeVsExpenditurePieChart, expenditureByCategoryPieChart;
+    let incomePieChart, expenditurePieChart, incomeExpenditureLineChart, incomeVsExpenditurePieChart, expenditureByCategoryPieChart, investmentPieChart;
 
     // Generate initial dates
     generateDates('2024-09-01', 30);
@@ -96,25 +103,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const incomeContainer = createEntryContainer('Income', incomeCategories);
         const expenditureContainer = createEntryContainer('Expenditure', expenditureCategories);
+        const investmentContainer = createEntryContainer('Investment', investmentCategories);
 
         dayCard.appendChild(incomeContainer);
         dayCard.appendChild(expenditureContainer);
+        dayCard.appendChild(investmentContainer);
 
         daysContainer.appendChild(dayCard);
         return dayCard;
     }
 
     function populateEntries(dayCard, entries) {
-        const incomeEntries = entries.filter(e => incomeCategories.includes(capitalizeFirstLetter(e.method)));
-        const expenditureEntries = entries.filter(e => expenditureCategories.includes(e.method));
+        const incomeEntries = entries.filter(e => e.type === 'income');
+        const expenditureEntries = entries.filter(e => e.type === 'expenditure');
+        const investmentEntries = entries.filter(e => e.type === 'investment');
 
         const incomeContainer = dayCard.querySelector('.income-container');
         const expenditureContainer = dayCard.querySelector('.expenditure-container');
+        const investmentContainer = dayCard.querySelector('.investment-container');
 
-        incomeEntries.forEach(entry => addEntry(incomeContainer.querySelector('.entry-list'), incomeCategories, entry.amount, capitalizeFirstLetter(entry.method)));
+        incomeEntries.forEach(entry => addEntry(incomeContainer.querySelector('.entry-list'), incomeCategories, entry.amount, entry.method));
         expenditureEntries.forEach(entry => {
-            const category = entry.category ? capitalizeFirstLetter(entry.category) : 'Uncategorized';
-            addEntry(expenditureContainer.querySelector('.entry-list'), expenditureCategories, entry.amount, capitalizeFirstLetter(entry.method), category);
+            const category = entry.category ? entry.category : 'Uncategorized';
+            addEntry(expenditureContainer.querySelector('.entry-list'), expenditureCategories, entry.amount, entry.method, category);
+        });
+        investmentEntries.forEach(entry => {
+            addEntry(investmentContainer.querySelector('.entry-list'), investmentCategories, entry.amount, entry.method);
         });
     }
 
@@ -132,13 +146,19 @@ document.addEventListener('DOMContentLoaded', () => {
         container.appendChild(entryList);
 
         const addEntryButton = document.createElement('button');
-        addEntryButton.classList.add('px-4', 'py-2', title === 'Income' ? 'bg-green-600' : 'bg-red-600', 'text-white', 'rounded-md', 'hover:bg-green-700', 'focus:outline-none', 'focus:ring-2', 'focus:ring-green-500');
+        let bgColorClass = 'bg-blue-600';
+        if (title === 'Income') bgColorClass = 'bg-green-600';
+        else if (title === 'Expenditure') bgColorClass = 'bg-red-600';
+
+        addEntryButton.classList.add('px-4', 'py-2', bgColorClass, 'text-white', 'rounded-md', 'hover:bg-blue-700', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500');
         addEntryButton.textContent = `Add ${title} Entry`;
         addEntryButton.addEventListener('click', () => {
             if (title === 'Income') {
-                addEntry(entryList, options);
-            } else {
-                addEntry(entryList, options, 0, options[0], 'Uncategorized');
+                addEntry(entryList, options, 0, options[0], null, 'income');
+            } else if (title === 'Expenditure') {
+                addEntry(entryList, options, 0, options[0], 'Uncategorized', 'expenditure');
+            } else if (title === 'Investment') {
+                addEntry(entryList, options, 0, options[0], null, 'investment');
             }
             updateTotals();
         });
@@ -147,9 +167,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return container;
     }
 
-    function addEntry(entryList, options, amount = 0, method = options[0], category = null) {
+    function addEntry(entryList, options, amount = 0, method = options[0], category = null, type = null) {
         const entryRow = document.createElement('div');
         entryRow.classList.add('flex', 'items-center', 'space-x-4', 'mt-2', 'entry-row');
+        if (type) entryRow.dataset.type = type;
 
         const amountInput = document.createElement('input');
         amountInput.type = 'number';
@@ -174,7 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
             opt.selected = option === method;
             methodSelect.appendChild(opt);
         });
-
         methodSelect.addEventListener('change', () => {
             updateTotals();
             const dayCard = entryList.closest('.day-card');
@@ -184,13 +204,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         entryRow.appendChild(methodSelect);
 
-        if (options === expenditureCategories) {
+        if (type === 'expenditure') {
             // Category selector for expenditure entries
             const categorySelect = document.createElement('select');
             categorySelect.classList.add('border-gray-300', 'focus:ring-blue-500', 'focus:border-blue-500', 'rounded-md', 'w-1/4', 'category-select', 'py-2', 'px-3');
             expenditureCategoryList.forEach(option => {
                 const opt = document.createElement('option');
-                opt.value = option.toLowerCase();
+                opt.value = option;
                 opt.textContent = option;
                 opt.selected = option.toLowerCase() === category.toLowerCase();
                 categorySelect.appendChild(opt);
@@ -226,10 +246,11 @@ document.addEventListener('DOMContentLoaded', () => {
         dayCard.querySelectorAll('.entry-row').forEach(entryRow => {
             const amount = parseFloat(entryRow.querySelector('.amount-input').value) || 0;
             const method = entryRow.querySelector('.method-select').value;
-            const categorySelect = entryRow.querySelector('.category-select');
-            const entry = { amount, method };
-            if (categorySelect) {
-                const category = categorySelect.value;
+            const type = entryRow.dataset.type;
+            const entry = { amount, method, type };
+            if (type === 'expenditure') {
+                const categorySelect = entryRow.querySelector('.category-select');
+                const category = categorySelect ? categorySelect.value : 'Uncategorized';
                 entry.category = category;
             }
             entries.push(entry);
@@ -237,57 +258,24 @@ document.addEventListener('DOMContentLoaded', () => {
         return entries;
     }
 
-    function updateExpenditureByCategoryTable(expenditureByCategoryData) {
-        const tableBody = document.querySelector("#expenditureByCategoryTable tbody");
-        tableBody.innerHTML = ''; // Clear existing rows
-
-        // Convert expenditure data to an array and sort by value in descending order
-        const sortedData = Object.entries(expenditureByCategoryData)
-            .map(([category, value]) => ({ category, value }))
-            .sort((a, b) => b.value - a.value);
-
-        // Calculate total expenditure for percentage calculation
-        const totalExpenditureByCategory = sortedData.reduce((sum, item) => sum + item.value, 0);
-
-        // Create and append rows to the table
-        sortedData.forEach(({ category, value }) => {
-            const percentage = ((value / totalExpenditureByCategory) * 100).toFixed(2);
-            const row = document.createElement('tr');
-
-            const categoryCell = document.createElement('td');
-            categoryCell.classList.add('border', 'px-4', 'py-2');
-            categoryCell.textContent = capitalizeFirstLetter(category);
-            row.appendChild(categoryCell);
-
-            const valueCell = document.createElement('td');
-            valueCell.classList.add('border', 'px-4', 'py-2');
-            valueCell.textContent = value.toFixed(2);
-            row.appendChild(valueCell);
-
-            const percentageCell = document.createElement('td');
-            percentageCell.classList.add('border', 'px-4', 'py-2');
-            percentageCell.textContent = `${percentage}%`;
-            row.appendChild(percentageCell);
-
-            tableBody.appendChild(row);
-        });
-    }
-
     function updateTotals() {
         totalExpenditure = 0;
         totalIncome = 0;
+        totalInvestments = 0;
         highestExpense = 0;
         let totalDays = 0;
         let totalDailySpending = 0;
 
         incomeData = {};
         expenditureData = {};
+        investmentData = {};
 
-        incomeCategories.forEach(category => incomeData[category] = 0); // Fix: use original keys
-        expenditureCategories.forEach(category => expenditureData[category] = 0); // Fix: use original keys
+        incomeCategories.forEach(category => incomeData[category] = 0);
+        expenditureCategories.forEach(category => expenditureData[category] = 0);
+        investmentCategories.forEach(category => investmentData[category] = 0);
 
         let expenditureByCategoryData = {};
-        expenditureCategoryList.forEach(category => expenditureByCategoryData[category.toLowerCase()] = 0);
+        expenditureCategoryList.forEach(category => expenditureByCategoryData[category] = 0);
 
         daysContainer.querySelectorAll('.day-card:not(.hidden)').forEach(dayCard => {
             let dailyExpenditure = 0;
@@ -296,18 +284,22 @@ document.addEventListener('DOMContentLoaded', () => {
             dayCard.querySelectorAll('.entry-row').forEach(entryRow => {
                 const amount = parseFloat(entryRow.querySelector('.amount-input').value) || 0;
                 const method = entryRow.querySelector('.method-select').value;
+                const type = entryRow.dataset.type;
 
-                if (incomeCategories.includes(method)) {
+                if (type === 'income') {
                     incomeData[method] += amount;
                     totalIncome += amount;
-                } else if (expenditureCategories.includes(method)) {
+                } else if (type === 'expenditure') {
                     expenditureData[method] += amount;
                     totalExpenditure += amount;
                     dailyExpenditure += amount;
 
                     const categorySelect = entryRow.querySelector('.category-select');
-                    let category = categorySelect ? categorySelect.value : 'uncategorized';
+                    let category = categorySelect ? categorySelect.value : 'Uncategorized';
                     expenditureByCategoryData[category] += amount;
+                } else if (type === 'investment') {
+                    investmentData[method] += amount;
+                    totalInvestments += amount;
                 }
                 hasEntries = true;
             });
@@ -325,15 +317,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         totalExpenditureEl.textContent = totalExpenditure.toFixed(2);
         totalIncomeEl.textContent = totalIncome.toFixed(2);
-        differenceEl.textContent = (totalIncome - totalExpenditure).toFixed(2);
+        totalInvestmentsEl.textContent = totalInvestments.toFixed(2);
+        netBalanceEl.textContent = (totalIncome - totalExpenditure - totalInvestments).toFixed(2);
         averageSpendingEl.textContent = averageSpending;
         highestExpenseEl.textContent = highestExpense.toFixed(2);
 
         // Update charts
         updateIncomePieChart();
         updateExpenditurePieChart();
+        updateInvestmentPieChart();
         updateExpenditureByCategoryPieChart(expenditureByCategoryData);
-        updateExpenditureByCategoryTable(expenditureByCategoryData);
         updateIncomeExpenditureLineChart();
         updateIncomeVsExpenditurePieChart();
     }
@@ -348,14 +341,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
         incomePieChart.data = incomeCategories.map(category => ({
             category: category,
-            value: incomeData[category] // Fix: use original keys
+            value: incomeData[category]
         }));
 
         let pieSeries = incomePieChart.series.push(new am4charts.PieSeries());
         pieSeries.dataFields.value = "value";
         pieSeries.dataFields.category = "category";
 
-        pieSeries.colors.step = 2; // Colors setting
+        // Custom colors with distinct colors for each category
+        const incomeColors = [
+            "#4e73df", // Blue
+            "#1cc88a", // Green
+            "#36b9cc", // Teal
+            "#f6c23e", // Yellow
+            "#e74a3b", // Red
+            "#858796", // Gray
+            "#fd7e14", // Orange
+            "#6f42c1", // Purple
+            "#20c997", // Cyan
+            "#e83e8c"  // Pink
+        ];
+
+        pieSeries.colors.list = incomeColors.map(color => am4core.color(color));
 
         incomePieChart.legend = new am4charts.Legend();
     }
@@ -370,16 +377,61 @@ document.addEventListener('DOMContentLoaded', () => {
 
         expenditurePieChart.data = expenditureCategories.map(category => ({
             category: category,
-            value: expenditureData[category] // Fix: use original keys
+            value: expenditureData[category]
         }));
 
         let pieSeries = expenditurePieChart.series.push(new am4charts.PieSeries());
         pieSeries.dataFields.value = "value";
         pieSeries.dataFields.category = "category";
 
-        pieSeries.colors.step = 2; // Colors setting
+        // Custom colors with distinct colors for each category
+        const expenditureColors = [
+            "#e74a3b", // Red
+            "#f6c23e", // Yellow
+            "#1cc88a", // Green
+            "#4e73df", // Blue
+            "#36b9cc", // Teal
+            "#858796", // Gray
+            "#fd7e14", // Orange
+            "#6f42c1", // Purple
+            "#20c997", // Cyan
+            "#e83e8c"  // Pink
+        ];
+
+        pieSeries.colors.list = expenditureColors.map(color => am4core.color(color));
 
         expenditurePieChart.legend = new am4charts.Legend();
+    }
+
+    function updateInvestmentPieChart() {
+        if (investmentPieChart) {
+            investmentPieChart.dispose();
+        }
+
+        investmentPieChart = am4core.create("investmentPieChart", am4charts.PieChart);
+        investmentPieChart.hiddenState.properties.opacity = 0;
+
+        investmentPieChart.data = investmentCategories.map(category => ({
+            category: category,
+            value: investmentData[category]
+        }));
+
+        let pieSeries = investmentPieChart.series.push(new am4charts.PieSeries());
+        pieSeries.dataFields.value = "value";
+        pieSeries.dataFields.category = "category";
+
+        // Custom colors
+        const investmentColors = [
+            "#4e73df", // Stocks - Blue
+            "#1cc88a", // Bonds - Green
+            "#36b9cc", // Real Estate - Teal
+            "#e74a3b", // Crypto - Red
+            "#858796"  // Others - Gray
+        ];
+
+        pieSeries.colors.list = investmentColors.map(color => am4core.color(color));
+
+        investmentPieChart.legend = new am4charts.Legend();
     }
 
     function updateExpenditureByCategoryPieChart(expenditureByCategoryData) {
@@ -392,14 +444,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         expenditureByCategoryPieChart.data = expenditureCategoryList.map(category => ({
             category: category,
-            value: expenditureByCategoryData[category.toLowerCase()]
+            value: expenditureByCategoryData[category]
         }));
 
         let pieSeries = expenditureByCategoryPieChart.series.push(new am4charts.PieSeries());
         pieSeries.dataFields.value = "value";
         pieSeries.dataFields.category = "category";
 
-        pieSeries.colors.step = 2; // Colors setting
+        // Custom colors
+        const categoryColors = [
+            "#e74a3b", // Food - Red
+            "#f6c23e", // Fuel - Yellow
+            "#1cc88a", // Family - Green
+            "#4e73df", // Recreational - Blue
+            "#36b9cc", // Challan - Teal
+            "#858796", // Redbull - Gray
+            "#fd7e14", // Recharge - Orange
+            "#6f42c1", // Toll - Purple
+            "#6c757d"  // Uncategorized - Dark Gray
+        ];
+
+        pieSeries.colors.list = categoryColors.map(color => am4core.color(color));
 
         expenditureByCategoryPieChart.legend = new am4charts.Legend();
     }
@@ -415,39 +480,47 @@ document.addEventListener('DOMContentLoaded', () => {
         const dates = [];
         const incomeValues = [];
         const expenditureValues = [];
+        const investmentValues = [];
 
         daysContainer.querySelectorAll('.day-card:not(.hidden)').forEach(dayCard => {
             const date = dayCard.dataset.date;
             let dailyIncome = 0;
             let dailyExpenditure = 0;
+            let dailyInvestment = 0;
 
             dayCard.querySelectorAll('.entry-row').forEach(entryRow => {
                 const amount = parseFloat(entryRow.querySelector('.amount-input').value) || 0;
-                const method = entryRow.querySelector('.method-select').value;
+                const type = entryRow.dataset.type;
 
-                if (incomeCategories.includes(method)) {
+                if (type === 'income') {
                     dailyIncome += amount;
-                } else if (expenditureCategories.includes(method)) {
+                } else if (type === 'expenditure') {
                     dailyExpenditure += amount;
+                } else if (type === 'investment') {
+                    dailyInvestment += amount;
                 }
             });
 
             dates.push(date);
             incomeValues.push({ date: new Date(date), value: dailyIncome });
             expenditureValues.push({ date: new Date(date), value: dailyExpenditure });
+            investmentValues.push({ date: new Date(date), value: dailyInvestment });
         });
 
         incomeExpenditureLineChart.data = incomeValues.map((incomeDataPoint, index) => {
             return {
                 date: incomeDataPoint.date,
                 income: incomeDataPoint.value,
-                expenditure: expenditureValues[index].value
+                expenditure: expenditureValues[index].value,
+                investment: investmentValues[index].value
             };
         });
 
+        // Create axes
         let dateAxis = incomeExpenditureLineChart.xAxes.push(new am4charts.DateAxis());
         let valueAxis = incomeExpenditureLineChart.yAxes.push(new am4charts.ValueAxis());
 
+        // Create series for income
         let incomeSeries = incomeExpenditureLineChart.series.push(new am4charts.LineSeries());
         incomeSeries.dataFields.valueY = "income";
         incomeSeries.dataFields.dateX = "date";
@@ -458,6 +531,7 @@ document.addEventListener('DOMContentLoaded', () => {
         incomeSeries.tooltipText = "{name}: [bold]{valueY}[/]";
         incomeSeries.tensionX = 0.8;
 
+        // Create series for expenditure
         let expenditureSeries = incomeExpenditureLineChart.series.push(new am4charts.LineSeries());
         expenditureSeries.dataFields.valueY = "expenditure";
         expenditureSeries.dataFields.dateX = "date";
@@ -468,10 +542,25 @@ document.addEventListener('DOMContentLoaded', () => {
         expenditureSeries.tooltipText = "{name}: [bold]{valueY}[/]";
         expenditureSeries.tensionX = 0.8;
 
+        // Create series for investments
+        let investmentSeries = incomeExpenditureLineChart.series.push(new am4charts.LineSeries());
+        investmentSeries.dataFields.valueY = "investment";
+        investmentSeries.dataFields.dateX = "date";
+        investmentSeries.name = "Investment";
+        investmentSeries.stroke = am4core.color("#3f51b5");
+        investmentSeries.fill = am4core.color("#3f51b5");
+        investmentSeries.strokeWidth = 2;
+        investmentSeries.tooltipText = "{name}: [bold]{valueY}[/]";
+        investmentSeries.tensionX = 0.8;
+
+        // Add legend
         incomeExpenditureLineChart.legend = new am4charts.Legend();
+
+        // Add cursor
         incomeExpenditureLineChart.cursor = new am4charts.XYCursor();
     }
 
+    // Update Total Income vs. Expenditure vs. Investments Pie Chart
     function updateIncomeVsExpenditurePieChart() {
         if (incomeVsExpenditurePieChart) {
             incomeVsExpenditurePieChart.dispose();
@@ -483,15 +572,18 @@ document.addEventListener('DOMContentLoaded', () => {
         incomeVsExpenditurePieChart.data = [
             { category: "Total Income", value: totalIncome },
             { category: "Total Expenditure", value: totalExpenditure },
+            { category: "Total Investments", value: totalInvestments },
         ];
 
         let pieSeries = incomeVsExpenditurePieChart.series.push(new am4charts.PieSeries());
         pieSeries.dataFields.value = "value";
         pieSeries.dataFields.category = "category";
 
+        // Custom colors
         pieSeries.colors.list = [
             am4core.color("#4caf50"),
-            am4core.color("#e53935")
+            am4core.color("#e53935"),
+            am4core.color("#3f51b5")
         ];
 
         incomeVsExpenditurePieChart.legend = new am4charts.Legend();
@@ -546,9 +638,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         updateTotals();
-    }
-
-    function capitalizeFirstLetter(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
     }
 });
