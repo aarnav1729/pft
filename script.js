@@ -136,6 +136,8 @@ document.addEventListener('DOMContentLoaded', () => {
         investmentEntries.forEach(entry => {
             addEntry(investmentContainer.querySelector('.entry-list'), investmentCategories, entry.amount, entry.method, null, 'investment');
         });
+
+        updateExpenditureByCategoryTable(getExpenditureByCategoryData());
     }
 
     function createEntryContainer(title, options) {
