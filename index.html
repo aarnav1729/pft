@@ -76,51 +76,46 @@
         <div class="my-8">
             <!-- Dashboard Card -->
             <div class="bg-transparent border border-black rounded-lg shadow p-6 mb-8">
-                <div class="bg-transparent border border-black rounded-lg shadow p-6 mb-4">
-                    <h1 class="text-center text-black">Welcome to CAT, your Custom Accounting Tool! CAT is built to
-                        allow users to make data-driven decisions about their finances. It is offered completely free of
-                        charge, and all your financial data is 100% secure!</h1>
-                </div>
-                <h2 class="text-3xl font-bold mb-6">Dashboard</h2>
+                <h2 class="text-3xl font-bold mb-6 text-center">cat: custom accounting tool</h2>
                 <div class="flex flex-col md:flex-row justify-between items-center mb-8">
                     <div class="mb-4 md:mb-0">
-                        <p class="text-lg">Total Expenditure: <span id="total-expenditure"
+                        <p class="text-lg">net expenditure: <span id="total-expenditure"
                                 class="text-red-600 font-bold text-xl">0</span></p>
-                        <p class="text-lg">Total Income: <span id="total-income"
+                        <p class="text-lg">net income: <span id="total-income"
                                 class="text-green-600 font-bold text-xl">0</span></p>
-                        <p class="text-lg">Total Investments: <span id="total-investments"
+                        <p class="text-lg">net investments: <span id="total-investments"
                                 class="text-blue-600 font-bold text-xl">0</span></p>
-                        <p class="text-lg">Net Balance: <span id="net-balance" class="font-bold text-xl">0</span></p>
+                        <p class="text-lg">net surplus: <span id="net-balance" class="font-bold text-xl">0</span></p>
                         <!-- New summary statistics -->
-                        <p class="text-lg mt-2">Average Daily Spending: <span id="average-spending"
+                        <p class="text-lg mt-2">avg daily spend: <span id="average-spending"
                                 class="font-bold text-xl">0</span></p>
-                        <p class="text-lg">Highest Expense: <span id="highest-expense"
+                        <p class="text-lg">highest spend: <span id="highest-expense"
                                 class="font-bold text-xl">0</span></p>
                     </div>
                     <div class="flex items-center">
-                        <label for="timeframe" class="mr-3 text-lg">View by:</label>
+                        <label for="timeframe" class="mr-3 text-lg">view data for:</label>
                         <select id="timeframe"
                             class="border-black bg-transparent focus:ring-blue-500 focus:border-blue-500 rounded-md">
-                            <option value="day">Day</option>
-                            <option value="month">Month</option>
-                            <option value="year">Year</option>
+                            <option value="day">day</option>
+                            <option value="month">month</option>
+                            <option value="year">year</option>
                         </select>
                     </div>
                 </div>
                 <!-- Date Range Inputs for Filtering -->
                 <div class="flex flex-col md:flex-row justify-between items-center mb-8" id="date-range-inputs">
                     <div id="day-input" class="hidden mb-4 md:mb-0">
-                        <label for="day-select" class="mr-3 text-lg">Select Day:</label>
+                        <label for="day-select" class="mr-3 text-lg">select day:</label>
                         <input type="date" id="day-select"
                             class="border-black focus:ring-blue-500 focus:border-blue-500 rounded-md">
                     </div>
                     <div id="month-input" class="hidden mb-4 md:mb-0">
-                        <label for="month-select" class="mr-3 text-lg">Select Month:</label>
+                        <label for="month-select" class="mr-3 text-lg">select month:</label>
                         <input type="month" id="month-select"
                             class="border-black focus:ring-blue-500 focus:border-blue-500 rounded-md">
                     </div>
                     <div id="year-input" class="hidden mb-4 md:mb-0">
-                        <label for="year-select" class="mr-3 text-lg">Select Year:</label>
+                        <label for="year-select" class="mr-3 text-lg">select year:</label>
                         <input type="number" id="year-select" min="2000" max="2100" step="1"
                             class="border-black focus:ring-blue-500 focus:border-blue-500 rounded-md"
                             placeholder="2024">
@@ -130,32 +125,32 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <!-- Income Sources Pie Chart -->
                     <div class="bg-transparent border border-black rounded-lg shadow p-6">
-                        <h3 class="text-lg font-semibold mb-4">Income Sources</h3>
+                        <h3 class="text-lg text-center font-semibold mb-4">income breakdown</h3>
                         <div id="incomePieChart" style="width: 100%; height: 300px;"></div>
                     </div>
                     <!-- Expenditure Breakdown Pie Chart -->
                     <div class="bg-transparent border border-black rounded-lg shadow p-6">
-                        <h3 class="text-lg font-semibold mb-4">Expenditure Breakdown</h3>
+                        <h3 class="text-lg text-center font-semibold mb-4">payment breakdown</h3>
                         <div id="expenditurePieChart" style="width: 100%; height: 300px;"></div>
                     </div>
                     <!-- Investment Portfolio Pie Chart -->
                     <div class="bg-transparent border border-black rounded-lg shadow p-6">
-                        <h3 class="text-lg font-semibold mb-4">Investment Portfolio</h3>
+                        <h3 class="text-lg text-center font-semibold mb-4">investment breakdown</h3>
                         <div id="investmentPieChart" style="width: 100%; height: 300px;"></div>
                     </div>
                     <!-- Total Income vs. Expenditure Pie Chart -->
-                    <div class="bg-transparent border border-black rounded-lg shadow p-6 md:col-span-2">
-                        <h3 class="text-lg font-semibold mb-4">Total Income vs. Expenditure vs. Investments</h3>
+                    <div class="bg-transparent border border-black rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold mb-4">net inc, exp, & inv</h3>
                         <div id="incomeVsExpenditurePieChart" style="width: 100%; height: 300px;"></div>
                     </div>
                     <!-- Expenditure Breakdown by Category Pie Chart -->
                     <div class="bg-transparent border border-black rounded-lg shadow p-6 md:col-span-2">
-                        <h3 class="text-lg font-semibold mb-4">Expenditure by Category</h3>
-                        <div id="expenditureByCategoryPieChart" style="width: 100%; height: 300px;"></div>
+                        <h3 class="text-lg font-semibold mb-4">expenditure by category</h3>
+                        <div id="expenditureByCategoryPieChart" style="width: 100%; height: 600px;"></div>
                     </div>
                     <!-- Expenditure Breakdown by Category Table -->
                     <div class="bg-transparent border border-black rounded-lg shadow p-6 md:col-span-2">
-                        <h3 class="text-lg font-semibold mb-4">expenditure by category details</h3>
+                        <h3 class="text-lg font-semibold mb-4">categorical expenditure breakdown</h3>
                         <!-- Responsive table container -->
                         <div class="overflow-x-auto">
                             <table id="expenditureByCategoryTable"
@@ -175,7 +170,7 @@
                     </div>
                     <!-- Income vs. Expenditure Line Chart -->
                     <div class="bg-transparent border border-black rounded-lg shadow p-6 md:col-span-2">
-                        <h3 class="text-lg font-semibold mb-4">Income vs. Expenditure</h3>
+                        <h3 class="text-lg text-center font-semibold mb-4">net inc, exp, & inv line chart</h3>
                         <div id="incomeExpenditureLineChart" style="width: 100%; height: 300px;"></div>
                     </div>
                 </div>
@@ -183,7 +178,7 @@
 
             <!-- Daily Entries -->
             <div class="bg-transparent border border-black rounded-lg shadow p-6">
-                <h3 class="text-2xl font-bold mb-6 bg-transparent">Daily Entries</h3>
+                <h3 class="text-2xl font-bold mb-6 bg-transparent">enter your data:</h3>
                 <div id="days-container" class="space-y-6 bg-transparent">
                     <!-- Dynamic day-based entry cards will be added here -->
                 </div>
