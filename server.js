@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
-// Use express.json() middleware instead of body-parser
 app.use(express.json());
 app.use(cors());
 
@@ -59,17 +58,17 @@ app.post('/save', async (req, res) => {
         res.send('Data saved successfully');
     } catch (error) {
         console.error('Error saving data:', error);
-        res.status(500).send('Error saving data');
+        res.status(500).json({ message: 'Error saving data' });
     }
 });
 
 app.get('/fetch', async (req, res) => {
     try {
         const finances = await Finance.find();
-        res.json(finances);
+        res.json(finances); // Ensure this returns a valid JSON response
     } catch (error) {
         console.error('Error fetching data:', error);
-        res.status(500).send('Error fetching data');
+        res.status(500).json({ message: 'Error fetching data' }); // Ensure this returns a valid JSON error
     }
 });
 
