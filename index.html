@@ -33,11 +33,13 @@
 
         /* Fullscreen footer styling */
         .fullscreen-footer {
-            height: 100vh; /* Make footer take up the entire viewport height */
+            height: 100vh;
+            /* Make footer take up the entire viewport height */
         }
 
         .footer-hidden {
-            display: none; /* Hide footer initially */
+            display: none;
+            /* Hide footer initially */
         }
     </style>
 </head>
@@ -184,8 +186,9 @@
     <!-- Footer -->
     <footer
         class="fade-in footer-hidden fullscreen-footer bg-transparent p-12 mt-16 mx-auto flex items-center justify-center">
-        <video src="cats.gif" alt="CAT Logo" class="w-128 h-128" autoplay loop>
+        <video src="cats.gif" class="w-128 h-128" autoplay loop muted playsinline></video>
     </footer>
+
 
     <script>
         // JavaScript to handle the fade-in effect on scroll
