@@ -17,6 +17,20 @@
     <!-- Include script.js -->
     <script defer src="script.js"></script>
     <link rel="stylesheet" src="styles.css">
+
+    <style>
+        /* Additional styles for the footer animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(100px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .fade-in.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
 </head>
 
 <body class="bg-gradient-to-l from-blue-200 via-white to-sky-200 text-black antialiased">
@@ -159,20 +173,30 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-transparent border-t border-black">
-        <div class="max-w-6xl">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex-shrink-0">
-                    <a href="#">
-                        <!-- Logo Image -->
-                        <img src="cats.png" alt="CAT Logo" class="h-48 w-48"
-                            style="bottom: 0; left: 0; background-color: transparent;">
-                    </a>
-                </div>
-                <!-- Additional nav items can be added here -->
-            </div>
-        </div>
+    <footer
+        class="fade-in bg-white border-t border-black p-12 mt-16 mx-auto max-w-6xl rounded-lg shadow-lg text-center">
+        <img src="cats.png" alt="CAT Logo" class="mx-auto w-64 h-64">
     </footer>
+
+    <script>
+        // JavaScript to handle the fade-in effect on scroll
+        document.addEventListener('DOMContentLoaded', () => {
+            const footer = document.querySelector('footer');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        footer.classList.add('show');
+                        observer.unobserve(entry.target); // Stop observing after the animation is triggered
+                    }
+                });
+            }, {
+                threshold: 0.1 // Trigger when 10% of the footer is in view
+            });
+
+            observer.observe(footer);
+        });
+    </script>
 </body>
 
 </html>
