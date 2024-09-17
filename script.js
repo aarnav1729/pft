@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const entryRow = document.createElement('div');
         entryRow.classList.add('flex', 'items-center', 'space-x-4', 'mt-2', 'entry-row');
         if (type) entryRow.dataset.type = type;
-        else entryRow.dataset.type = 'expenditure'; // Default to 'expenditure' if type is null
+        else entryRow.dataset.type = 'expenditure'; // default to 'expenditure' if type is null
 
         const amountInput = document.createElement('input');
         amountInput.type = 'number';

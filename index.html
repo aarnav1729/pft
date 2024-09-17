@@ -22,40 +22,45 @@
         /* Additional styles for the footer animation */
         .fade-in {
             opacity: 0;
+            /* Initially hidden */
             transform: translateY(100px);
+            /* Start position for the sliding effect */
             transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            /* Ease out on scroll up */
         }
 
         .fade-in.show {
             opacity: 1;
+            /* Show footer */
             transform: translateY(0);
+            /* Slide into view */
+            transition: opacity 0.8s ease-in, transform 0.8s ease-in;
+            /* Ease in on scroll down */
         }
 
-        /* Fullscreen footer styling */
-        .fullscreen-footer {
+        /* Sticky footer adjustments */
+        .sticky-footer {
             width: 100%;
-            height: 100vh;
-            /* Full viewport height */
+            height: auto;
+            /* Removed sticky position for proper flow */
+            bottom: 0;
+            z-index: 10;
+            /* Ensure it appears on top */
         }
 
-        .footer-hidden {
-            display: none;
-            /* Hide footer initially */
-        }
-
+        /* Adjust fullscreen image styles */
         .fullscreen-img {
             object-fit: cover;
-            width: 100vw;
-            height: 100vh;
-
+            bottom: 0;
         }
     </style>
+
 </head>
 
-<body class="bg-gradient-to-l from-blue-200 via-white to-sky-200 text-black antialiased">
+<body class="bg-gradient-to-l from-pink-100 to-sky-100 text-black antialiased">
 
     <!-- Navigation Bar -->
-    <nav class="bg-transparent border-b border-black sticky">
+    <nav class="bg-gradient-to-r from-pink-100 to-sky-100 border-b border-black">
         <div class="max-w-6xl mx-auto px-3">
             <div class="flex justify-between items-center h-16">
                 <div class="flex-shrink-0">
@@ -89,8 +94,8 @@
                         <!-- New summary statistics -->
                         <p class="text-lg mt-2">avg daily spend: <span id="average-spending"
                                 class="font-bold text-xl">0</span></p>
-                        <p class="text-lg">highest spend: <span id="highest-expense"
-                                class="font-bold text-xl">0</span></p>
+                        <p class="text-lg">highest spend: <span id="highest-expense" class="font-bold text-xl">0</span>
+                        </p>
                     </div>
                     <div class="flex items-center">
                         <label for="timeframe" class="mr-3 text-lg">view data for:</label>
@@ -138,20 +143,20 @@
                         <h3 class="text-lg text-center font-semibold mb-4">investment breakdown</h3>
                         <div id="investmentPieChart" style="width: 100%; height: 300px;"></div>
                     </div>
-                    <!-- Total Income vs. Expenditure Pie Chart -->
+                    <!-- total income vs expenditure pie chart -->
                     <div class="bg-transparent border border-black rounded-lg shadow p-6">
                         <h3 class="text-lg font-semibold mb-4">net inc, exp, & inv</h3>
                         <div id="incomeVsExpenditurePieChart" style="width: 100%; height: 300px;"></div>
                     </div>
-                    <!-- Expenditure Breakdown by Category Pie Chart -->
+                    <!-- expenditure breakdown by category pie chart -->
                     <div class="bg-transparent border border-black rounded-lg shadow p-6 md:col-span-2">
                         <h3 class="text-lg font-semibold mb-4">expenditure by category</h3>
                         <div id="expenditureByCategoryPieChart" style="width: 100%; height: 600px;"></div>
                     </div>
-                    <!-- Expenditure Breakdown by Category Table -->
+                    <!-- expenditure Breakdown by category table -->
                     <div class="bg-transparent border border-black rounded-lg shadow p-6 md:col-span-2">
                         <h3 class="text-lg font-semibold mb-4">categorical expenditure breakdown</h3>
-                        <!-- Responsive table container -->
+                        <!-- responsive table container -->
                         <div class="overflow-x-auto">
                             <table id="expenditureByCategoryTable"
                                 class="min-w-full bg-transparent border-collapse border border-black">
@@ -163,12 +168,12 @@
                                     </tr>
                                 </thead>
                                 <tbody class="border border-black">
-                                    <!-- Data will be dynamically populated here -->
+                                    <!-- data will be dynamically populated here -->
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                    <!-- Income vs. Expenditure Line Chart -->
+
                     <div class="bg-transparent border border-black rounded-lg shadow p-6 md:col-span-2">
                         <h3 class="text-lg text-center font-semibold mb-4">net inc, exp, & inv line chart</h3>
                         <div id="incomeExpenditureLineChart" style="width: 100%; height: 300px;"></div>
@@ -176,42 +181,45 @@
                 </div>
             </div>
 
-            <!-- Daily Entries -->
             <div class="bg-transparent border border-black rounded-lg shadow p-6">
                 <h3 class="text-2xl font-bold mb-6 bg-transparent">enter your data:</h3>
-                <div id="days-container" class="space-y-6 bg-transparent">
-                    <!-- Dynamic day-based entry cards will be added here -->
+                <!-- Updated days container -->
+                <div id="days-container-wrapper">
+                    <div id="days-container" class="space-y-6 bg-transparent"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="fade-in footer-hidden fullscreen-footer bg-transparent">
-        <!-- Display GIF using img tag -->
-        <img src="cats.gif" class="w-full h-full fullscreen-img" alt="CAT GIF">
-    </footer>
+    <!-- Footer Container (moved inside a new div to control its position) -->
+    <div id="footer-container" class="fade-in bg-transparent mt-0 mb-0 p-0">
+        <footer class="p-0 border border-black">
+            <img src="cats.gif" class="object-cover w-full h-full fullscreen-img" alt="CAT GIF">
+        </footer>
+    </div>
 
     <script>
-        // JavaScript to handle the fade-in effect on scroll
         document.addEventListener('DOMContentLoaded', () => {
-            const footer = document.querySelector('footer');
+            const footerContainer = document.getElementById('footer-container');
+            const daysContainerWrapper = document.getElementById('days-container-wrapper');
 
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        footer.classList.remove('footer-hidden');
-                        footer.classList.add('show');
-                        observer.unobserve(entry.target); // Stop observing after the animation is triggered
+                        footerContainer.classList.add('show'); // ease-in effect on scroll down
+                    } else {
+                        footerContainer.classList.remove('show'); // ease-out effect on scroll up
                     }
                 });
             }, {
-                threshold: 0.1 // Trigger when 10% of the footer is in view
+                root: null, // use the viewport as the root
+                threshold: 0.1 // trigger when 10% of the last entry is visible
             });
 
-            observer.observe(footer);
+            observer.observe(daysContainerWrapper);
         });
     </script>
+
 </body>
 
 </html>
