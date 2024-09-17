@@ -189,29 +189,5 @@
     <footer class="p-0 border border-black">
         <img src="cats.gif" class="object-cover w-full h-full" alt="CAT GIF">
     </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const footerContainer = document.getElementById('footer-container');
-            const daysContainerWrapper = document.getElementById('days-container-wrapper');
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        footerContainer.classList.add('show'); // ease-in effect on scroll down
-                    } else {
-                        footerContainer.classList.remove('show'); // ease-out effect on scroll up
-                    }
-                });
-            }, {
-                root: null, // use the viewport as the root
-                threshold: 0.1 // trigger when 10% of the last entry is visible
-            });
-
-            observer.observe(daysContainerWrapper);
-        });
-    </script>
-
 </body>
-
 </html>
