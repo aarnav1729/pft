@@ -47,12 +47,6 @@
             z-index: 10;
             /* Ensure it appears on top */
         }
-
-        /* Adjust fullscreen image styles */
-        .fullscreen-img {
-            object-fit: cover;
-            bottom: 0;
-        }
     </style>
 
 </head>
@@ -183,7 +177,7 @@
 
             <div class="bg-transparent border border-black rounded-lg shadow p-6">
                 <h3 class="text-2xl font-bold mb-6 bg-transparent">enter your data:</h3>
-                <!-- Updated days container -->
+
                 <div id="days-container-wrapper">
                     <div id="days-container" class="space-y-6 bg-transparent"></div>
                 </div>
@@ -191,12 +185,10 @@
         </div>
     </div>
 
-    <!-- Footer Container (moved inside a new div to control its position) -->
-    <div id="footer-container" class="fade-in bg-transparent mt-0 mb-0 p-0">
-        <footer class="p-0 border border-black">
-            <img src="cats.gif" class="object-cover w-full h-full fullscreen-img" alt="CAT GIF">
-        </footer>
-    </div>
+
+    <footer class="p-0 border border-black">
+        <img src="cats.gif" class="object-cover w-full h-full" alt="CAT GIF">
+    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {

@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
         methodSelect.classList.add('border-black', 'bg-gray-700', 'text-white', 'focus:ring-blue-500', 'focus:border-blue-500', 'rounded-md', 'w-1/4', 'method-select', 'py-2', 'px-3');
         options.forEach(option => {
             const opt = document.createElement('option');
-            opt.value = option; // Preserve original case
+            opt.value = option; // preserve original case
             opt.textContent = option;
             opt.selected = option === method;
             methodSelect.appendChild(opt);
@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
         entryRow.appendChild(methodSelect);
 
         if (type === 'expenditure') {
-            // Category selector for expenditure entries
+            // category selector for expenditure entries
             const categorySelect = document.createElement('select');
             categorySelect.classList.add('border-black', 'bg-gray-700', 'text-white', 'focus:ring-blue-500', 'focus:border-blue-500', 'rounded-md', 'w-1/4', 'category-select', 'py-2', 'px-3');
             expenditureCategoryList.forEach(option => {
