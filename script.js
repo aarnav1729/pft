@@ -18,9 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let incomeCategories = ['Dad', 'Webstax', 'Premier'];
     let expenditureCategories = ['Bar', 'Cash', 'GPay'];
     // New investment categories
-    let investmentCategories = ['Stocks', 'Bonds', 'Real Estate', 'Crypto', 'Others'];
+    let investmentCategories = ['Stocks', 'Bonds', 'Real Estate', 'SIP', 'Crypto'];
     // New expenditure categories
-    let expenditureCategoryList = ['Food', 'Fuel', 'Family', 'Recreational', 'Challan', 'Redbull', 'Recharge', 'Toll', 'Uncategorized'];
+    let expenditureCategoryList = ['Food', 'Fuel', 'Family', 'Recreational', 'Challan', 'Redbull', 'Recharge', 'Toll', 'Subscriptions', 'Uncategorized'];
     let incomeData = {};
     let expenditureData = {};
     let investmentData = {};
